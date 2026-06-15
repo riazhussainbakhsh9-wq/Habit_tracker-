@@ -43,6 +43,15 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Allah$343";
 const ADMIN_SESSION_HOURS = Number(process.env.ADMIN_SESSION_HOURS || 24);
 const ADMIN_SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || SUPABASE_SERVICE_ROLE_KEY;
 
+function isVercelOrigin(value) {
+  try {
+    const url = new URL(value);
+    return url.hostname.endsWith(".vercel.app") || url.hostname.endsWith(".vercel.sh");
+  } catch {
+    return false;
+  }
+}
+
 const ADMIN_SESSION_MS = 1000 * 60 * 60 * Math.max(1, ADMIN_SESSION_HOURS);
 let adminPasswordValue = ADMIN_PASSWORD;
 
@@ -77,7 +86,9 @@ app.use(cors({
     // Allow server-to-server requests and tools that do not send an Origin header.
     if (!origin) return callback(null, true);
     const normalizedOrigin = toOrigin(origin);
-    if (FRONTEND_URLS.includes(normalizedOrigin)) return callback(null, true);
+    if (FRONTEND_URLS.includes(normalizedOrigin) || isVercelOrigin(normalizedOrigin)) {
+      return callback(null, true);
+    }
     return callback(new Error(`CORS blocked for origin: ${origin}`));
   },
   credentials: true,
