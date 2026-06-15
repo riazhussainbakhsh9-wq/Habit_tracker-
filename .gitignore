@@ -1,0 +1,4 @@
+# Ignore local environment files for both apps
+**/.env
+**/.env.*
+!**/.env.example
