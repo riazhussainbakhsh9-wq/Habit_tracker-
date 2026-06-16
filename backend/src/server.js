@@ -483,12 +483,12 @@ app.post("/api/auth/signup", async (req, res) => {
     }
 
     const emailRedirectTo = `${PRIMARY_FRONTEND_URL}/login`;
-    const { data, error } = await supabasePublic.auth.signUp({
-      email,
-      password,
-      options: { emailRedirectTo },
-    });
+    const { data, error } = await supabasePublic.auth.signUp(
+      { email, password },
+      { emailRedirectTo }
+    );
     if (error) {
+      console.error("Signup error:", error);
       const rawMessage = String(error.message || "").toLowerCase();
       if (rawMessage.includes("already registered") || rawMessage.includes("already exists") || rawMessage.includes("duplicate")) {
         return res.status(409).json({ error: "This account already exists. Please login instead." });
