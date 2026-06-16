@@ -93,6 +93,17 @@ app.use(cors({
   },
   credentials: true,
 }));
+app.options("*", cors({
+  origin(origin, callback) {
+    if (!origin) return callback(null, true);
+    const normalizedOrigin = toOrigin(origin);
+    if (FRONTEND_URLS.includes(normalizedOrigin) || isVercelOrigin(normalizedOrigin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  credentials: true,
+}));
 app.use(express.json({ limit: "8mb" }));
 
 function isMissingTableError(error) {
